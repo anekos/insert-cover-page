@@ -18,9 +18,17 @@ def main(ctx: click.Context) -> None:
 @main.command("insert")
 @click.argument("original", type=TypePath, required=True)
 @click.argument("output", type=TypePath, required=True)
+@click.argument("backup-directory", type=TypePath, required=True)
 @click.argument("covers", type=TypePath, required=True, nargs=-1)
-def main_insert(original: Path, output: Path, covers: Iterator[Path]) -> None:
-    insert_covers(original, output, covers)
+def main_insert(
+    original: Path, output: Path, backup_directory: Path, covers: Iterator[Path]
+) -> None:
+    insert_covers(
+        original=original,
+        output=output,
+        backup_directory=backup_directory,
+        covers=covers,
+    )
 
 
 if __name__ == "__main__":

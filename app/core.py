@@ -1,12 +1,15 @@
 from io import BytesIO
 from pathlib import Path
 from typing import Iterator
+import shutil
 
 from PIL import Image
 from pypdf import PdfReader, PdfWriter
 
 
-def insert_covers(original: Path, output: Path, covers: Iterator[Path]) -> None:
+def insert_covers(
+    original: Path, output: Path, backup_directory: Path, covers: Iterator[Path]
+) -> None:
     """
     Insert the pages generated from cover images before the original PDF pages.
 
@@ -14,12 +17,14 @@ def insert_covers(original: Path, output: Path, covers: Iterator[Path]) -> None:
     :param output: path to write the combined PDF
     :param covers: iterable of image file paths to place before the PDF
     """
-    cover_paths: list[Path] = [Path(path) for path in covers]
-
     writer = PdfWriter()
 
+    backup_path: Path = backup_directory / str(original)[1:]
+    backup_path.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(original, backup_path)
+
     # Convert each cover image into a PDF page and append.
-    for cover_path in cover_paths:
+    for cover_path in covers:
         with Image.open(cover_path) as img:
             rgb_image = img.convert("RGB")
             buffer = BytesIO()
